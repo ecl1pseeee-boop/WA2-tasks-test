@@ -1,0 +1,27 @@
+# PHP / Laravel
+/services/php/vendor/
+/services/php/node_modules/
+/services/php/.env
+/services/php/storage/*.key
+/services/php/storage/logs/*.log
+/services/php/storage/framework/cache/*
+/services/php/storage/framework/sessions/*
+/services/php/storage/framework/views/*
+
+# Python / FastAPI
+__pycache__/
+*.py[cod]
+/services/api/.venv/
+/services/api/.env
+
+# Docker / данные
+*.env
+.env
+/data/
+/volumes/
+
+# ОС / редакторы
+.DS_Store
+.idea/
+.vscode/
+*.swp

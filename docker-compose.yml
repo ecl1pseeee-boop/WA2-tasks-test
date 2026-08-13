@@ -1,0 +1,57 @@
+# Boardy — доска объявлений. Локальный запуск: docker compose up -d
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./services/php:/var/www/html:ro
+    depends_on:
+      - php
+      - api
+
+  php:
+    build: ./services/php
+    volumes:
+      - ./services/php:/var/www/html
+    environment:
+      APP_ENV: local
+      DB_HOST: mysql
+      DB_DATABASE: boardy
+      DB_USERNAME: boardy
+      DB_PASSWORD: boardy
+      REDIS_HOST: redis
+    depends_on:
+      - mysql
+      - redis
+
+  api:
+    build: ./services/api
+    volumes:
+      - ./services/api:/app
+    environment:
+      DB_HOST: mysql
+      DB_NAME: boardy
+      DB_USER: boardy
+      DB_PASSWORD: boardy
+      REDIS_HOST: redis
+    depends_on:
+      - mysql
+      - redis
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: boardy
+      MYSQL_USER: boardy
+      MYSQL_PASSWORD: boardy
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+
+volumes:
+  mysql-data:
