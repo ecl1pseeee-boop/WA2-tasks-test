@@ -29,7 +29,7 @@ GITHUB_REDIRECT_URI=http://localhost:8080/auth/github/callback
 ```
 
 ```bash
-docker compose up -d
+docker compose up -d --build
 ```
 
 ## Как проверить, что получилось
