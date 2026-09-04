@@ -2,6 +2,7 @@
 services:
   nginx:
     image: nginx:1.27-alpine
+    restart: unless-stopped
     ports:
       - "8080:80"
     volumes:
@@ -13,6 +14,7 @@ services:
 
   php:
     build: ./services/php
+    restart: unless-stopped
     volumes:
       - ./services/php:/var/www/html
     environment:
@@ -23,11 +25,14 @@ services:
       DB_PASSWORD: boardy
       REDIS_HOST: redis
     depends_on:
-      - mysql
-      - redis
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   api:
     build: ./services/api
+    restart: unless-stopped
     volumes:
       - ./services/api:/app
     environment:
@@ -37,21 +42,33 @@ services:
       DB_PASSWORD: boardy
       REDIS_HOST: redis
     depends_on:
-      - mysql
-      - redis
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   mysql:
     image: mysql:8.0
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: boardy
       MYSQL_USER: boardy
       MYSQL_PASSWORD: boardy
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      retries: 10
     volumes:
       - mysql-data:/var/lib/mysql
 
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
 
 volumes:
   mysql-data:
